@@ -26,7 +26,6 @@ def get_grayscale_image_array(image_path):
         return None
 
 
-
 def histogram_equalization(image_path):
     """
 
@@ -47,7 +46,7 @@ def histogram_equalization(image_path):
     return equalized_image, runtime_milliseconds
 
 
-def bilateral_filtering(image_path, sigma_color=None, sigma_spatial=1):
+def bilateral_filtering(image_path, sigma_color=0.028, sigma_spatial=10):
     """
 
     :param image_path:
@@ -72,7 +71,7 @@ def bilateral_filtering(image_path, sigma_color=None, sigma_spatial=1):
     return filtered_image, runtime_milliseconds
 
 
-def wavelet_denoise(image_path):
+def wavelet_denoising(image_path):
     """
 
     :param image_path:
@@ -93,7 +92,7 @@ def wavelet_denoise(image_path):
     return denoised_image, runtime_milliseconds
 
 
-def total_variation_denoise(image_path, weight=0.1):
+def total_variation_denoising(image_path, weight=0.1):
     """
 
     :param image_path:
