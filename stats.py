@@ -73,3 +73,21 @@ def compute_cnr(enhanced_image_path, ground_truth_path):
     cnr = (mean_roi - mean_background) / std_noise
 
     return cnr
+
+
+def compute_ambe(original_image_path, enhanced_image_path):
+    """
+
+    :param original_image_path:
+    :param enhanced_image_path:
+    :return:
+    """
+    original_image_array = get_grayscale_image_array(original_image_path)
+    enhanced_image_array = get_grayscale_image_array(enhanced_image_path)
+
+    mean_brightness_original = np.mean(original_image_array)
+    mean_brightness_enhanced = np.mean(enhanced_image_array)
+
+    ambe = np.abs(mean_brightness_original - mean_brightness_enhanced)
+
+    return ambe
