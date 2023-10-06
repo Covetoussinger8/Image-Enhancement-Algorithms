@@ -8,7 +8,7 @@ from PIL import Image
 from skimage import exposure, restoration
 
 
-def get_grayscale_image(image_path):
+def get_grayscale_image_array(image_path):
     """
 
     :param image_path:
@@ -20,11 +20,11 @@ def get_grayscale_image(image_path):
                 grayscale_image = image.copy()
             else:  # Else convert it to grayscale
                 grayscale_image = image.convert('L')
+        return np.asarray(grayscale_image)
     except FileNotFoundError:
         print(f"File not found: {image_path}")
-        grayscale_image = None
+        return None
 
-    return grayscale_image
 
 
 def histogram_equalization(image_path):
@@ -35,7 +35,7 @@ def histogram_equalization(image_path):
     """
     start_time = time.monotonic_ns()
 
-    image_array = np.asarray(get_grayscale_image(image_path))
+    image_array = get_grayscale_image_array(image_path)
     equalized_image_array = exposure.equalize_hist(image_array)
     equalized_image = Image.fromarray((equalized_image_array * 255).astype(
         np.uint8))
@@ -57,7 +57,7 @@ def bilateral_filtering(image_path, sigma_color=None, sigma_spatial=1):
     """
     start_time = time.monotonic_ns()
 
-    image_array = np.asarray(get_grayscale_image(image_path))
+    image_array = get_grayscale_image_array(image_path)
     filtered_image_array = restoration.denoise_bilateral(
                                                 image=image_array,
                                                 sigma_color=sigma_color,
@@ -80,7 +80,7 @@ def wavelet_denoise(image_path):
     """
     start_time = time.monotonic_ns()
 
-    image_array = np.asarray(get_grayscale_image(image_path))
+    image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_wavelet(image=image_array,
                                                        method='BayesShrink')
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
@@ -102,7 +102,7 @@ def total_variation_denoise(image_path, weight=0.1):
     """
     start_time = time.monotonic_ns()
 
-    image_array = np.asarray(get_grayscale_image(image_path))
+    image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_tv_chambolle(image=image_array,
                                                             weight=weight)
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
