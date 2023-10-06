@@ -47,18 +47,21 @@ def histogram_equalization(image_path):
     return equalized_image, runtime_milliseconds
 
 
-def bilateral_filtering(image_path):
+def bilateral_filtering(image_path, sigma_color=None, sigma_spatial=1):
     """
 
     :param image_path:
+    :param sigma_color:
+    :param sigma_spatial:
     :return:
     """
     start_time = time.monotonic_ns()
 
     image_array = np.asarray(get_grayscale_image(image_path))
-    filtered_image_array = restoration.denoise_bilateral(image=image_array,
-                                                         sigma_color=0.028,
-                                                         sigma_spatial=10)
+    filtered_image_array = restoration.denoise_bilateral(
+                                                image=image_array,
+                                                sigma_color=sigma_color,
+                                                sigma_spatial=sigma_spatial)
     filtered_image = Image.fromarray((filtered_image_array * 255).astype(
         np.uint8))
 
