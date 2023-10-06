@@ -56,15 +56,35 @@ def bilateral_filtering(image_path):
     start_time = time.monotonic_ns()
 
     image_array = np.asarray(get_grayscale_image(image_path))
-    denoised_image_array = restoration.denoise_bilateral(image=image_array,
+    filtered_image_array = restoration.denoise_bilateral(image=image_array,
                                                          sigma_color=0.028,
-                                                         sigma_spatial=10,
-                                                         channel_axis=None)
-    equalized_image = Image.fromarray((denoised_image_array * 255).astype(
+                                                         sigma_spatial=10)
+    filtered_image = Image.fromarray((filtered_image_array * 255).astype(
         np.uint8))
 
     end_time = time.monotonic_ns()
     runtime_ns = end_time - start_time
     runtime_milliseconds = runtime_ns / 1e6
 
-    return equalized_image, runtime_milliseconds
+    return filtered_image, runtime_milliseconds
+
+
+def wavelet_denoise(image_path):
+    """
+
+    :param image_path:
+    :return:
+    """
+    start_time = time.monotonic_ns()
+
+    image_array = np.asarray(get_grayscale_image(image_path))
+    denoised_image_array = restoration.denoise_wavelet(image=image_array,
+                                                       method='BayesShrink')
+    denoised_image = Image.fromarray((denoised_image_array * 255).astype(
+        np.uint8))
+
+    end_time = time.monotonic_ns()
+    runtime_ns = end_time - start_time
+    runtime_milliseconds = runtime_ns / 1e6
+
+    return denoised_image, runtime_milliseconds
