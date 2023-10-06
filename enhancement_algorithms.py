@@ -88,3 +88,25 @@ def wavelet_denoise(image_path):
     runtime_milliseconds = runtime_ns / 1e6
 
     return denoised_image, runtime_milliseconds
+
+
+def total_variation_denoise(image_path, weight=0.1):
+    """
+
+    :param image_path:
+    :param weight:
+    :return:
+    """
+    start_time = time.monotonic_ns()
+
+    image_array = np.asarray(get_grayscale_image(image_path))
+    denoised_image_array = restoration.denoise_tv_chambolle(image=image_array,
+                                                            weight=weight)
+    denoised_image = Image.fromarray((denoised_image_array * 255).astype(
+        np.uint8))
+
+    end_time = time.monotonic_ns()
+    runtime_ns = end_time - start_time
+    runtime_milliseconds = runtime_ns / 1e6
+
+    return denoised_image, runtime_milliseconds
