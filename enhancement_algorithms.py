@@ -46,7 +46,7 @@ def histogram_equalization(image_path):
     return equalized_image, runtime_milliseconds
 
 
-def bilateral_filtering(image_path, sigma_color=0.028, sigma_spatial=10):
+def bilateral_filtering(image_path):
     """
 
     :param image_path:
@@ -54,6 +54,8 @@ def bilateral_filtering(image_path, sigma_color=0.028, sigma_spatial=10):
     :param sigma_spatial:
     :return:
     """
+    sigma_color = float(input("Choose a value for 'sigma_color': "))
+    sigma_spatial = int(input("Choose a value for 'sigma_spatial': "))
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
@@ -77,11 +79,13 @@ def wavelet_denoising(image_path):
     :param image_path:
     :return:
     """
+    wavelet = input("Choose a value for 'wavelet': ")
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_wavelet(image=image_array,
-                                                       method='BayesShrink')
+                                                       method='BayesShrink',
+                                                       wavelet=wavelet)
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
         np.uint8))
 
@@ -92,13 +96,14 @@ def wavelet_denoising(image_path):
     return denoised_image, runtime_milliseconds
 
 
-def total_variation_denoising(image_path, weight=0.1):
+def total_variation_denoising(image_path):
     """
 
     :param image_path:
     :param weight:
     :return:
     """
+    weight = float(input("Choose a value for 'weight': "))
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
