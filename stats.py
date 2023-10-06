@@ -4,6 +4,8 @@
 
 import numpy as np
 from skimage import restoration
+from skimage.metrics import (mean_squared_error, peak_signal_noise_ratio,
+                             structural_similarity)
 from enhancement_algorithms import get_grayscale_image_array
 
 
@@ -17,10 +19,9 @@ def compute_mse(original_image_path, enhanced_image_path):
     original_image_array = get_grayscale_image_array(original_image_path)
     enhanced_image_array = get_grayscale_image_array(enhanced_image_path)
 
-    squared_differences = (original_image_array - enhanced_image_array) ** 2
-    mean_squared_error = np.mean(squared_differences)
+    mse = mean_squared_error(original_image_array, enhanced_image_array)
 
-    return mean_squared_error
+    return mse
 
 
 def compute_rmse(original_image_path, enhanced_image_path):
@@ -30,8 +31,8 @@ def compute_rmse(original_image_path, enhanced_image_path):
     :param enhanced_image_path:
     :return:
     """
-    mean_squared_error = compute_mse(original_image_path, enhanced_image_path)
-    root_mean_squared_error = np.sqrt(mean_squared_error)
+    mse = compute_mse(original_image_path, enhanced_image_path)
+    root_mean_squared_error = np.sqrt(mse)
 
     return root_mean_squared_error
 
@@ -91,3 +92,33 @@ def compute_ambe(original_image_path, enhanced_image_path):
     ambe = np.abs(mean_brightness_original - mean_brightness_enhanced)
 
     return ambe
+
+
+def compute_psnr(original_image_path, enhanced_image_path):
+    """
+
+    :param original_image_path:
+    :param enhanced_image_path:
+    :return:
+    """
+    original_image_array = get_grayscale_image_array(original_image_path)
+    enhanced_image_array = get_grayscale_image_array(enhanced_image_path)
+
+    psnr = peak_signal_noise_ratio(original_image_array, enhanced_image_array)
+
+    return psnr
+
+
+def compute_ssim(original_image_path, enhanced_image_path):
+    """
+
+    :param original_image_path:
+    :param enhanced_image_path:
+    :return:
+    """
+    original_image_array = get_grayscale_image_array(original_image_path)
+    enhanced_image_array = get_grayscale_image_array(enhanced_image_path)
+
+    ssim = structural_similarity(original_image_array, enhanced_image_array)
+
+    return ssim

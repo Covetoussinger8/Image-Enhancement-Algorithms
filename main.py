@@ -27,7 +27,7 @@ def enhance(function, origin, destination, technique):
 
     for image_name in os.listdir(origin):
         original_image_path = origin + image_name
-        enhanced, _ = function(original_image_path)
+        enhanced, runtime = function(original_image_path)
         enhanced_image_path = destination + technique + image_name
         enhanced.save(enhanced_image_path)
 
@@ -55,7 +55,7 @@ def start_parsing():
     )
 
     parser.add_argument(
-        '-g', '--ground-truth', required=True, type=str, nargs=1,
+        '-g', '--ground-truth', required=False, type=str, nargs=1,
         help="Path to directory where the ground truth images are located"
     )
 
@@ -77,19 +77,20 @@ def start_parsing():
 
     args = parser.parse_args()
 
-    if args.apply == 'he':
-        enhance(function=histogram_equalization, origin=args.origin,
-                destination=args.destination, technique='he_')
-    elif args.apply == 'bf':
-        enhance(function=bilateral_filtering, origin=args.origin,
-                destination=args.destination, technique='bf_')
-    elif args.apply == 'wv':
-        enhance(function=wavelet_denoising, origin=args.origin,
-                destination=args.destination, technique='wv_')
-    elif args.apply == 'tv':
-        enhance(function=total_variation_denoising, origin=args.origin,
-                destination=args.destination, technique='tv_')
+    if 'he' in args.apply:
+        enhance(function=histogram_equalization, origin=args.origin[0],
+                destination=args.destination[0], technique='he_')
+    elif 'bf' in args.apply:
+        enhance(function=bilateral_filtering, origin=args.origin[0],
+                destination=args.destination[0], technique='bf_')
+    elif 'wv' in args.apply:
+        enhance(function=wavelet_denoising, origin=args.origin[0],
+                destination=args.destination[0], technique='wv_')
+    elif 'tv' in args.apply:
+        enhance(function=total_variation_denoising, origin=args.origin[0],
+                destination=args.destination[0], technique='tv_')
     else:
+        print(args.apply)
         print("Invalid arguments!")
 
 

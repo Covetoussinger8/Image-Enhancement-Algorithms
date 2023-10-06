@@ -50,8 +50,6 @@ def bilateral_filtering(image_path):
     """
 
     :param image_path:
-    :param sigma_color:
-    :param sigma_spatial:
     :return:
     """
     sigma_color = float(input("Choose a value for 'sigma_color': "))
@@ -100,7 +98,6 @@ def total_variation_denoising(image_path):
     """
 
     :param image_path:
-    :param weight:
     :return:
     """
     weight = float(input("Choose a value for 'weight': "))
