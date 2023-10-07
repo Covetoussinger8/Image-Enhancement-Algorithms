@@ -122,3 +122,10 @@ def compute_ssim(original_image_path, enhanced_image_path):
     ssim = structural_similarity(original_image_array, enhanced_image_array)
 
     return ssim
+
+
+def generate_csv(file_path, dataset):
+    assert type(dataset) == list or type(dataset) == tuple
+
+    df = pd.DataFrame(dataset)
+    df.to_csv(file_path, index=False)
