@@ -2,6 +2,7 @@
     describe the program
 """
 
+import stats
 import argparse
 import os
 from enhancement_algorithms import (histogram_equalization,
@@ -30,6 +31,8 @@ def enhance(function, origin, destination, ground_truth_path, technique):
     os.makedirs(destination, exist_ok=True)
     output_csv_path = destination + "csv/"
     os.makedirs(destination, exist_ok=True)
+
+    output_metrics = []
 
     for image_name in os.listdir(origin):
         input_image_path = origin + image_name
