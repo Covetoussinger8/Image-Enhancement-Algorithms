@@ -29,8 +29,8 @@ def enhance(function, origin, destination, ground_truth_path, technique):
         return
 
     os.makedirs(destination, exist_ok=True)
-    output_csv_path = destination + "csv/"
-    os.makedirs(destination, exist_ok=True)
+    output_csv_path = os.path.join(destination + "csv/")
+    os.makedirs(output_csv_path, exist_ok=True)
 
     output_metrics = []
 
@@ -43,15 +43,15 @@ def enhance(function, origin, destination, ground_truth_path, technique):
         ground_truth_image_path = (ground_truth_path + image_name_stem +
                                    '_mask.png')
         output_metrics.append(
-            {"image": image_name,
-             "mse": stats.compute_mse(input_image_path, output_image_path),
-             "rmse": stats.compute_rmse(input_image_path, output_image_path),
-             "cnr": stats.compute_cnr(output_image_path,
+            {'image': technique + image_name,
+             'mse': stats.compute_mse(input_image_path, output_image_path),
+             'rmse': stats.compute_rmse(input_image_path, output_image_path),
+             'cnr': stats.compute_cnr(output_image_path,
                                       ground_truth_image_path),
-             "ambe": stats.compute_ambe(input_image_path, output_image_path),
-             "psnr": stats.compute_psnr(input_image_path, output_image_path),
-             "ssim": stats.compute_ssim(input_image_path, output_image_path),
-             "runtime": runtime
+             'ambe': stats.compute_ambe(input_image_path, output_image_path),
+             'psnr': stats.compute_psnr(input_image_path, output_image_path),
+             'ssim': stats.compute_ssim(input_image_path, output_image_path),
+             'runtime': runtime
              }
         )
 
