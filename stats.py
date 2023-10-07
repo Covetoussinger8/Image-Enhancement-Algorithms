@@ -58,8 +58,8 @@ def compute_cnr(enhanced_image_path, ground_truth_path):
         return 0.0
 
     # roi = region of interest
-    roi_pixel_values = np.empty(0)
-    background_pixel_values = np.empty(0)
+    roi_pixel_values = []
+    background_pixel_values = []
 
     for enhanced_pixel, ground_truth_pixel in zip(enhanced_image_array,
                                                   ground_truth_array):
@@ -68,11 +68,14 @@ def compute_cnr(enhanced_image_path, ground_truth_path):
         else:
             background_pixel_values.append(enhanced_pixel)
 
+    roi_pixel_values = np.asarray(roi_pixel_values)
+    background_pixel_values = np.asarray(background_pixel_values)
+
     mean_roi = np.mean(roi_pixel_values)
     mean_background = np.mean(background_pixel_values)
-    std_noise = restoration.estimate_sigma(background_pixel_values)
+    std_background = np.std(background_pixel_values)
 
-    cnr = (mean_roi - mean_background) / std_noise
+    cnr = np.abs(mean_roi - mean_background) / std_background
 
     return cnr
 
@@ -125,8 +128,8 @@ def compute_ssim(original_image_path, enhanced_image_path):
     return ssim
 
 
-def generate_csv(file_path, dataset):
+def generate_csv(csv_directory, dataset):
     assert type(dataset) == list or type(dataset) == tuple
 
     df = pd.DataFrame(dataset)
-    df.to_csv(file_path, index=False)
+    df.to_csv(csv_directory + "stats.csv", index=False)
