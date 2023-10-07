@@ -3,6 +3,7 @@
 """
 
 import numpy as np
+import pandas as pd
 from skimage import restoration
 from skimage.metrics import (mean_squared_error, peak_signal_noise_ratio,
                              structural_similarity)
