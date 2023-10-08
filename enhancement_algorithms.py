@@ -77,13 +77,11 @@ def wavelet_denoising(image_path):
     :param image_path:
     :return:
     """
-    wavelet = input("Choose a value for 'wavelet': ")
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_wavelet(image=image_array,
-                                                       method='BayesShrink',
-                                                       wavelet=wavelet)
+                                                       method='BayesShrink')
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
         np.uint8))
 
@@ -100,12 +98,10 @@ def total_variation_denoising(image_path):
     :param image_path:
     :return:
     """
-    weight = float(input("Choose a value for 'weight': "))
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
-    denoised_image_array = restoration.denoise_tv_chambolle(image=image_array,
-                                                            weight=weight)
+    denoised_image_array = restoration.denoise_tv_chambolle(image=image_array)
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
         np.uint8))
 
