@@ -52,15 +52,13 @@ def bilateral_filtering(image_path):
     :param image_path:
     :return:
     """
-    sigma_color = float(input("Choose a value for 'sigma_color': "))
-    sigma_spatial = int(input("Choose a value for 'sigma_spatial': "))
     start_time = time.monotonic_ns()
 
     image_array = get_grayscale_image_array(image_path)
     filtered_image_array = restoration.denoise_bilateral(
                                                 image=image_array,
-                                                sigma_color=sigma_color,
-                                                sigma_spatial=sigma_spatial)
+                                                sigma_color=0.025,
+                                                sigma_spatial=10)
     filtered_image = Image.fromarray((filtered_image_array * 255).astype(
         np.uint8))
 
@@ -81,7 +79,8 @@ def wavelet_denoising(image_path):
 
     image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_wavelet(image=image_array,
-                                                       method='BayesShrink')
+                                                       method='BayesShrink',
+                                                       wavelet='db1')
     denoised_image = Image.fromarray((denoised_image_array * 255).astype(
         np.uint8))
 
