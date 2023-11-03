@@ -50,7 +50,7 @@ def enhance(function, input_path: Path, output_path: Path,
 
         output_metrics.append(
             {'image': technique_prefix + image_name,
-             'ssim': stats.compute_ssim(original_image_array,
+             'ssim': stats.compute_ssim(ground_truth_image_array,
                                         enhanced_image_array),
              'cnr': stats.compute_cnr(enhanced_image_array,
                                       ground_truth_image_array),
