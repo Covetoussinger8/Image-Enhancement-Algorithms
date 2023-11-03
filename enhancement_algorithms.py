@@ -2,96 +2,70 @@
     Enhancement algorithms
 """
 
+
 import time
 import numpy as np
-from PIL import Image
 from skimage import exposure, restoration
 
 
-def get_grayscale_image_array(image_path):
+
+def histogram_equalization(image_array: np.ndarray):
     """
-
-    :param image_path:
-    :return:
-    """
-    try:
-        with Image.open(image_path) as image:
-            if image.mode == 'L':  # Check whether the image is grayscale
-                grayscale_image = image.copy()
-            else:  # Else convert it to grayscale
-                grayscale_image = image.convert('L')
-        return np.asarray(grayscale_image)
-    except FileNotFoundError:
-        print(f"File not found: {image_path}")
-        return None
-
-
-def histogram_equalization(image_path):
-    """
-
-    :param image_path:
+    :param image_array:
     :return:
     """
     start_time = time.monotonic_ns()
 
-    image_array = get_grayscale_image_array(image_path)
     equalized_image_array = exposure.equalize_hist(image_array)
-    equalized_image = Image.fromarray((equalized_image_array * 255).astype(
-        np.uint8))
+    equalized_image_array = (equalized_image_array * 255).astype(np.uint8)
 
     end_time = time.monotonic_ns()
     runtime_ns = end_time - start_time
     runtime_milliseconds = runtime_ns / 1e6
 
-    return equalized_image, runtime_milliseconds
+    return equalized_image_array, runtime_milliseconds
 
 
-def bilateral_filtering(image_path):
+def bilateral_filtering(image_array: np.ndarray):
     """
-
-    :param image_path:
+    :param image_array:
     :return:
     """
     start_time = time.monotonic_ns()
 
-    image_array = get_grayscale_image_array(image_path)
     filtered_image_array = restoration.denoise_bilateral(
                                                 image=image_array,
                                                 sigma_color=0.025,
                                                 sigma_spatial=10)
-    filtered_image = Image.fromarray((filtered_image_array * 255).astype(
-        np.uint8))
+    filtered_image_array = (filtered_image_array * 255).astype(np.uint8)
 
     end_time = time.monotonic_ns()
     runtime_ns = end_time - start_time
     runtime_milliseconds = runtime_ns / 1e6
 
-    return filtered_image, runtime_milliseconds
+    return filtered_image_array, runtime_milliseconds
 
 
-def wavelet_denoising(image_path):
+def wavelet_denoising(image_array):
     """
-
-    :param image_path:
+    :param image_array:
     :return:
     """
     start_time = time.monotonic_ns()
 
-    image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_wavelet(image=image_array,
                                                        method='BayesShrink',
                                                        wavelet='db1')
-    denoised_image = Image.fromarray((denoised_image_array * 255).astype(
-        np.uint8))
+    denoised_image_array = (denoised_image_array * 255).astype(np.uint8)
 
     end_time = time.monotonic_ns()
     runtime_ns = end_time - start_time
     runtime_milliseconds = runtime_ns / 1e6
 
-    return denoised_image, runtime_milliseconds
+    return denoised_image_array, runtime_milliseconds
 
 
-def total_variation_denoising(image_path):
+def total_variation_denoising(image_array):
     """
 
     :param image_path:
@@ -99,13 +73,26 @@ def total_variation_denoising(image_path):
     """
     start_time = time.monotonic_ns()
 
-    image_array = get_grayscale_image_array(image_path)
     denoised_image_array = restoration.denoise_tv_chambolle(image=image_array)
-    denoised_image = Image.fromarray((denoised_image_array * 255).astype(
-        np.uint8))
+    denoised_image_array = (denoised_image_array * 255).astype(np.uint8)
 
     end_time = time.monotonic_ns()
     runtime_ns = end_time - start_time
     runtime_milliseconds = runtime_ns / 1e6
 
-    return denoised_image, runtime_milliseconds
+    return denoised_image_array, runtime_milliseconds
+
+
+def clahe(image_array):
+    start_time = time.monotonic_ns()
+
+    equalized_image_array = exposure.equalize_adapthist(image=image_array,
+                                                        clip_limit=0.30,
+                                                        kernel_size=(58, 58))
+    equalized_image_array = (equalized_image_array * 255).astype(np.uint8)
+
+    end_time = time.monotonic_ns()
+    runtime_ns = end_time - start_time
+    runtime_milliseconds = runtime_ns / 1e6
+
+    return equalized_image_array, runtime_milliseconds

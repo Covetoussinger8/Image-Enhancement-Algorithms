@@ -2,56 +2,67 @@
     describe the program
 """
 
+from pathlib import Path
 import stats
 import argparse
 import os
+import cv2 as cv
 from enhancement_algorithms import (histogram_equalization,
                                     bilateral_filtering,
                                     total_variation_denoising,
-                                    wavelet_denoising)
+                                    wavelet_denoising,
+                                    clahe)
 
 
-def enhance(function, origin, destination, ground_truth_path, technique):
-    """
-
-    :param function:
-    :param origin:
-    :param destination:
-    :param technique:
-    :return:
-    """
-    if not os.path.exists(ground_truth_path):
-        print(f"The specified path '{origin}' does not exist.")
+def enhance(function, input_path: Path, output_path: Path,
+            ground_truth_path: Path, technique_prefix: str):
+    if not ground_truth_path.exists():
+        print(f"The specified path '{ground_truth_path}' does not exist.")
         return
 
-    if not os.path.exists(origin):
-        print(f"The specified path '{origin}' does not exist.")
+    if not input_path.exists():
+        print(f"The specified path '{input_path}' does not exist.")
         return
 
-    os.makedirs(destination, exist_ok=True)
-    output_csv_path = os.path.join(destination + "csv/")
-    os.makedirs(output_csv_path, exist_ok=True)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    output_csv_path = output_path / "csv"
+    output_csv_path.mkdir(exist_ok=True)
 
     output_metrics = []
 
-    for image_name in os.listdir(origin):
-        input_image_path = origin + image_name
-        enhanced, runtime = function(input_image_path)
-        output_image_path = destination + technique + image_name
-        enhanced.save(output_image_path)
+    for original_image_path in input_path.glob("*"):
+        image_name = original_image_path.name
+        original_image_array = cv.imread(str(original_image_path),
+                                         cv.IMREAD_GRAYSCALE)
+
+        enhanced_image_array, runtime = function(original_image_array)
+
+        output_image_path = output_path / (technique_prefix + image_name)
+        cv.imwrite(str(output_image_path), enhanced_image_array)
+
         image_name_stem = os.path.splitext(image_name)[0]
-        ground_truth_image_path = (ground_truth_path + image_name_stem +
-                                   '_mask.png')
+
+        ground_truth_image_path = ground_truth_path / (image_name_stem +
+                                                       '_mask.png')
+        ground_truth_image_array = cv.imread(str(ground_truth_image_path),
+                                             cv.IMREAD_GRAYSCALE)
+
         output_metrics.append(
-            {'image': technique + image_name,
-             'mse': stats.compute_mse(input_image_path, output_image_path),
-             'rmse': stats.compute_rmse(input_image_path, output_image_path),
-             'cnr': stats.compute_cnr(output_image_path,
-                                      ground_truth_image_path),
-             'ambe': stats.compute_ambe(input_image_path, output_image_path),
-             'psnr': stats.compute_psnr(input_image_path, output_image_path),
-             'ssim': stats.compute_ssim(input_image_path, output_image_path),
-             'runtime': runtime
+            {'image': technique_prefix + image_name,
+             'ssim': stats.compute_ssim(original_image_array,
+                                        enhanced_image_array),
+             'cnr': stats.compute_cnr(enhanced_image_array,
+                                      ground_truth_image_array),
+             'ambe': stats.compute_ambe(original_image_array,
+                                        enhanced_image_array),
+             'runtime': runtime,
+             'mse': stats.compute_mse(original_image_array,
+                                      enhanced_image_array),
+             'rmse': stats.compute_rmse(original_image_array,
+                                        enhanced_image_array),
+             'psnr': stats.compute_psnr(original_image_array,
+                                        enhanced_image_array),
              }
         )
 
@@ -92,9 +103,7 @@ def start_parsing():
              "\tbf (Bilateral Filtering)\n"
              "\twv (Wavelet Denoising)\n"
              "\ttv (Total Variation Denoising)\n\n"
-             "Alternatively, the metrics for each image in a directory can be "
-             "computed with:"
-             "\tcm (Compute Metrics)"
+             "\tclahe (Contrast Limited Adaptative Histogram Equalization"
     )
 
     parser.add_argument(
@@ -104,21 +113,35 @@ def start_parsing():
     args = parser.parse_args()
 
     if 'he' in args.apply:
-        enhance(function=histogram_equalization, origin=args.origin[0],
-                destination=args.destination[0], technique='he_',
-                ground_truth_path=args.ground_truth[0])
+        enhance(function=histogram_equalization,
+                input_path=Path(args.origin[0]),
+                output_path=Path(args.destination[0]),
+                technique_prefix='he_',
+                ground_truth_path=Path(args.ground_truth[0]))
     elif 'bf' in args.apply:
-        enhance(function=bilateral_filtering, origin=args.origin[0],
-                destination=args.destination[0], technique='bf_',
-                ground_truth_path=args.ground_truth[0])
+        enhance(function=bilateral_filtering,
+                input_path=Path(args.origin[0]),
+                output_path=Path(args.destination[0]),
+                technique_prefix='bf_',
+                ground_truth_path=Path(args.ground_truth[0]))
     elif 'wv' in args.apply:
-        enhance(function=wavelet_denoising, origin=args.origin[0],
-                destination=args.destination[0], technique='wv_',
-                ground_truth_path=args.ground_truth[0])
+        enhance(function=wavelet_denoising,
+                input_path=Path(args.origin[0]),
+                output_path=Path(args.destination[0]),
+                technique_prefix='wv_',
+                ground_truth_path=Path(args.ground_truth[0]))
     elif 'tv' in args.apply:
-        enhance(function=total_variation_denoising, origin=args.origin[0],
-                destination=args.destination[0], technique='tv_',
-                ground_truth_path=args.ground_truth[0])
+        enhance(function=total_variation_denoising,
+                input_path=Path(args.origin[0]),
+                output_path=Path(args.destination[0]),
+                technique_prefix='tv_',
+                ground_truth_path=Path(args.ground_truth[0]))
+    elif 'clahe' in args.apply:
+        enhance(function=clahe,
+                input_path=Path(args.origin[0]),
+                output_path=Path(args.destination[0]),
+                technique_prefix='clahe_',
+                ground_truth_path=Path(args.ground_truth[0]))
     else:
         print(args.apply)
         print("Invalid arguments!")
